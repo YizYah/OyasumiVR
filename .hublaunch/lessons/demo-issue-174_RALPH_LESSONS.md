@@ -9,6 +9,10 @@
 ## Environment note
 - Node 20 is default but Angular build needs 22+. Downloaded /tmp/node-v22.22.3-linux-x64; run builds with `export PATH="/tmp/node-v22.22.3-linux-x64/bin:$PATH"`. Non-build checks + vitest work on Node 20.
 - Must `npm install` first (fresh container has no node_modules); use node_modules/.bin/vitest (npx reinstalls).
+- 2026-10-28 re-run: build:ui / build:overlay-ui failed again with the same "Node 20 detected, need 22+"
+  error — but no code was wrong. /tmp/node-v22.22.3-linux-x64 from the prior run was still on disk; just
+  re-exported PATH with it and both builds passed immediately, no source changes needed. If that dir is
+  ever gone, re-download a Node 22.22.3+/24.15.0+/26.0.0+ linux-x64 build and extract it there.
 
 ## Key Discoveries
 - Plan claimed `pairwise` was already imported in the service (line 12) — it was NOT. Had to add it.
