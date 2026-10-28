@@ -37,6 +37,12 @@
   pattern — treat any `test:web` failure report naming `mqtt-discovery.service.spec.ts`
   (`Promise.withResolvers is not a function`) or `migration-transforms.test.ts` (5000ms timeout) as the
   Node-20-on-PATH symptom first, and verify with `node --version` before touching any source file.
+- 2026-10-28 regression run (HubLaunch auto-fix attempt 5, same failure report again, naming the same two
+  files with the same errors): fifth confirmation of the identical false-positive pattern. `node --version`
+  was v20.20.2 at session start; `/tmp/node-v22.22.3-linux-x64` was still on disk. Exporting it onto PATH
+  and running `node_modules/.bin/vitest run` (no source changes) reproduced all 781 tests passing across
+  83/83 files in 99s. Zero files were edited this round — the fix is PATH-only. If this report recurs
+  again, stop re-investigating the source and just do this PATH export + rerun.
 
 ## Key Discoveries
 - Plan claimed `pairwise` was already imported in the service (line 12) — it was NOT. Had to add it.
