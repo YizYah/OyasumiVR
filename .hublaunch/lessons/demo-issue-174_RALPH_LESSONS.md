@@ -17,6 +17,18 @@
   /tmp/node-v22.22.3-linux-x64 was still present; exporting it onto PATH made both builds pass with zero
   source changes. Each fresh container/session resets PATH to the Node 20 default, so this step must be
   repeated every time build:ui or build:overlay-ui is run, even though the Node 22 download itself persists.
+- 2026-10-28 regression run (HubLaunch auto-fix attempt 3): test:web reported 5 failures —
+  3 in `mqtt-discovery.service.spec.ts` (`TypeError: Promise.withResolvers is not a function`) and 2 in
+  `scripts/migration-transforms.test.ts` (5000ms timeouts). Neither file was touched by this feature's
+  commits (confirmed via `git log -- <file>` and diffing against `git merge-base main HEAD`); both predate
+  this branch. Root cause: the regression run used the session-default Node 20 (`Promise.withResolvers` is
+  Node 22+), and vitest was slow enough under that/this sandbox's load to trip the 5s per-test timeout on
+  two migration tests. Re-running `node_modules/.bin/vitest run` after
+  `export PATH="/tmp/node-v22.22.3-linux-x64/bin:$PATH"` reproduced all 781 tests passing with zero source
+  changes. So: vitest (test:web), not just build:ui/build:overlay-ui, needs Node 22 on PATH — the earlier
+  note that "non-build checks + vitest work on Node 20" is wrong in a loaded/slow sandbox and should not be
+  relied on; always export the Node 22 PATH before running `npm run test:web` or `vitest` directly, in every
+  fresh session.
 
 ## Key Discoveries
 - Plan claimed `pairwise` was already imported in the service (line 12) — it was NOT. Had to add it.
