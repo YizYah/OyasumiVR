@@ -43,6 +43,13 @@
   and running `node_modules/.bin/vitest run` (no source changes) reproduced all 781 tests passing across
   83/83 files in 99s. Zero files were edited this round — the fix is PATH-only. If this report recurs
   again, stop re-investigating the source and just do this PATH export + rerun.
+- 2026-10-28 regression run (HubLaunch auto-fix attempt 6, same failure report again, naming the same two
+  files with the same errors): sixth confirmation of the identical false-positive pattern. `node --version`
+  was v20.20.2 at session start; `/tmp/node-v22.22.3-linux-x64` was still on disk. Exporting it onto PATH
+  and running `node_modules/.bin/vitest run` (no source changes) reproduced all 781 tests passing across
+  83/83 files in 99.18s. Zero files were edited this round — the fix is PATH-only. This pattern is now
+  stable across 6 consecutive auto-fix attempts; it is a harness/environment artifact (fresh session resets
+  PATH to Node 20), not a real regression from this branch's changes.
 
 ## Key Discoveries
 - Plan claimed `pairwise` was already imported in the service (line 12) — it was NOT. Had to add it.
