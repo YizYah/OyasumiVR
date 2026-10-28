@@ -50,6 +50,17 @@
   83/83 files in 99.18s. Zero files were edited this round — the fix is PATH-only. This pattern is now
   stable across 6 consecutive auto-fix attempts; it is a harness/environment artifact (fresh session resets
   PATH to Node 20), not a real regression from this branch's changes.
+- 2026-10-28 regression run (HubLaunch auto-fix attempt 7, same failure report again, naming the same two
+  files with the same errors): seventh confirmation of the identical false-positive pattern. `node
+  --version` was v20.20.2 at session start; `/tmp/node-v22.22.3-linux-x64` was still on disk. Exporting it
+  onto PATH and running `node_modules/.bin/vitest run` (no source changes) reproduced all 781 tests passing
+  across 83/83 files in 99.03s. Zero files were edited this round. This signature is now fully understood:
+  whatever process generates these regression-failure reports is invoking `test:web`/vitest without the
+  Node 22 PATH export, so it will keep reproducing on every future attempt until that process itself is
+  fixed to export `PATH="/tmp/node-v22.22.3-linux-x64/bin:$PATH"` before running tests. No further
+  source-level investigation is warranted for this exact signature (mqtt-discovery `Promise.withResolvers`
+  + migration-transforms 5000ms timeouts) — just verify `node --version`, export the Node 22 PATH, and
+  rerun.
 
 ## Key Discoveries
 - Plan claimed `pairwise` was already imported in the service (line 12) — it was NOT. Had to add it.
