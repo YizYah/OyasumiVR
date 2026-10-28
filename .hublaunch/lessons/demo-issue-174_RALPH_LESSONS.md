@@ -13,6 +13,10 @@
   error — but no code was wrong. /tmp/node-v22.22.3-linux-x64 from the prior run was still on disk; just
   re-exported PATH with it and both builds passed immediately, no source changes needed. If that dir is
   ever gone, re-download a Node 22.22.3+/24.15.0+/26.0.0+ linux-x64 build and extract it there.
+- 2026-10-28 re-run #2 (HubLaunch auto-fix attempt): identical failure, identical non-fix.
+  /tmp/node-v22.22.3-linux-x64 was still present; exporting it onto PATH made both builds pass with zero
+  source changes. Each fresh container/session resets PATH to the Node 20 default, so this step must be
+  repeated every time build:ui or build:overlay-ui is run, even though the Node 22 download itself persists.
 
 ## Key Discoveries
 - Plan claimed `pairwise` was already imported in the service (line 12) — it was NOT. Had to add it.
