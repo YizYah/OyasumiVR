@@ -29,6 +29,14 @@
   note that "non-build checks + vitest work on Node 20" is wrong in a loaded/slow sandbox and should not be
   relied on; always export the Node 22 PATH before running `npm run test:web` or `vitest` directly, in every
   fresh session.
+- 2026-10-28 regression run (HubLaunch auto-fix attempt 4, triggered by the same failure report as attempt
+  3): re-confirmed zero source changes needed. `node --version` at session start was v20.20.2 (default);
+  `/tmp/node-v22.22.3-linux-x64` was still on disk. Exporting it onto PATH and re-running
+  `node_modules/.bin/vitest run` reproduced all 781 tests passing (83/83 files), including the two files
+  named in the failure report. This is now the second confirmed instance of this exact false-positive
+  pattern — treat any `test:web` failure report naming `mqtt-discovery.service.spec.ts`
+  (`Promise.withResolvers is not a function`) or `migration-transforms.test.ts` (5000ms timeout) as the
+  Node-20-on-PATH symptom first, and verify with `node --version` before touching any source file.
 
 ## Key Discoveries
 - Plan claimed `pairwise` was already imported in the service (line 12) — it was NOT. Had to add it.
